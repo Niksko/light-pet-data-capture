@@ -7,6 +7,7 @@ import (
 	"fmt"
 )
 
+// TODO: Make the logger an injectable parameter so that we can customize it
 func RootHandler(response http.ResponseWriter, request *http.Request) {
 	response.Header().Add("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
 	response.Header().Add("X-Frame-Options", "DENY")
