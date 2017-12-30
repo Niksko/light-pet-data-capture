@@ -5,9 +5,10 @@ import (
 	"net/http"
 	"log"
 	"fmt"
+	"github.com/gorilla/handlers"
+	"os"
 )
 
-// TODO: Make the logger an injectable parameter so that we can customize it
 func RootHandler(response http.ResponseWriter, request *http.Request) {
 	response.Header().Add("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
 	response.Header().Add("X-Frame-Options", "DENY")
@@ -24,11 +25,12 @@ func RootHandler(response http.ResponseWriter, request *http.Request) {
 	}
 }
 
-
 func main() {
     mux := http.NewServeMux()
 
     mux.HandleFunc("/", RootHandler)
+
+    loggedMux := handlers.LoggingHandler(os.Stdout, mux)
 
     cfg := &tls.Config{
         MinVersion:               tls.VersionTLS12,
@@ -42,7 +44,7 @@ func main() {
     }
     srv := &http.Server{
         Addr:         ":443",
-        Handler:      mux,
+        Handler:      loggedMux,
         TLSConfig:    cfg,
         TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler), 0),
     }
