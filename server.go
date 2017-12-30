@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"net/http"
 	"log"
+	"fmt"
 )
 
 func RootHandler(response http.ResponseWriter, request *http.Request) {
@@ -11,10 +12,14 @@ func RootHandler(response http.ResponseWriter, request *http.Request) {
 	response.Header().Add("X-Frame-Options", "DENY")
 	response.Header().Add("X-Content-Type-Options", "nosniff")
 
+	log.Print(fmt.Sprintf("Handled request at / from %s", request.RemoteAddr))
+
 	if (request.Method == http.MethodPost) {
 		response.WriteHeader(http.StatusOK)
+		log.Print("Request method was POST, sending 200 OK")
 	} else {
 		response.WriteHeader(http.StatusMethodNotAllowed)
+		log.Print(fmt.Sprintf("Request method was %s, sending 405 Method Not Allowed", request.Method))
 	}
 }
 
