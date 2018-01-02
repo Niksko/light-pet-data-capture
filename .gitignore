@@ -80,3 +80,6 @@ fabric.properties
 #
 # Ignore certs folder
 certs/*
+
+# Ignore compiled protobuf definitions
+*.pb.go

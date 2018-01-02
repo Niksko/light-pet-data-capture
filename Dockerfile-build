@@ -1,0 +1,11 @@
+FROM golang:alpine as builder
+
+WORKDIR /go/src/app
+
+# Install the protobuf C++ implementation, and git for our go get command
+RUN apk add --update protobuf git
+# Install the go protobuf library
+RUN go get -u github.com/golang/protobuf/protoc-gen-go
+
+# Compile our protobuf definition into go code
+CMD ["protoc", "--go_out=.", "sensorData.proto"]

@@ -11,3 +11,10 @@ Docker and docker-compose
 ## Testing
 
 `go test`
+
+## Compiling protobuf definitions
+
+`docker-compose -f docker-compose-build.yml up`
+
+This will build a container with the pre-requisites for compiling a
+`.proto` file into Go based protobuf definitions.
