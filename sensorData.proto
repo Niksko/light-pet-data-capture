@@ -1,4 +1,5 @@
 syntax = "proto2";
+package main;
 
 message SensorData {
     optional uint64 timestamp = 1;
