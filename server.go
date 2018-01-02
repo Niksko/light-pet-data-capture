@@ -10,8 +10,6 @@ import (
 	"github.com/niksko/light-pet-data-capture/http-handlers"
 )
 
-
-
 func main() {
     mux := http.NewServeMux()
 
