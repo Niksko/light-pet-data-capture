@@ -40,6 +40,7 @@ func RootHandler(response http.ResponseWriter, request *http.Request, unmarshalF
 
 		response.WriteHeader(http.StatusOK)
 		log.Print("Successfully decoded message, sent 200 OK")
+		log.Print(decodedData)
 	} else {
 		response.WriteHeader(http.StatusMethodNotAllowed)
 		log.Print(fmt.Sprintf("Request method was %s, sending 405 Method Not Allowed", request.Method))
