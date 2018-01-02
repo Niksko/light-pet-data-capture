@@ -14,7 +14,7 @@ func main() {
     mux := http.NewServeMux()
 
     mux.HandleFunc("/", func(response http.ResponseWriter, request *http.Request) {
-    	http_handlers.RootHandler(response, request, proto.UnmarshalText)
+    	http_handlers.RootHandler(response, request, proto.Unmarshal)
 	})
 
     loggedMux := handlers.LoggingHandler(os.Stdout, mux)

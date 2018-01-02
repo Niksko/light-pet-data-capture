@@ -8,9 +8,10 @@ import (
 	"io/ioutil"
 	"net/http"
 	"github.com/niksko/light-pet-data-capture/sensor-data"
+	"encoding/hex"
 )
 
-func RootHandler(response http.ResponseWriter, request *http.Request, unmarshalFunc func(string, proto.Message) error) {
+func RootHandler(response http.ResponseWriter, request *http.Request, unmarshalFunc func([]byte, proto.Message) error) {
 	response.Header().Add("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
 	response.Header().Add("X-Frame-Options", "DENY")
 	response.Header().Add("X-Content-Type-Options", "nosniff")
@@ -30,7 +31,15 @@ func RootHandler(response http.ResponseWriter, request *http.Request, unmarshalF
 			return
 		}
 
-		err = unmarshalFunc(string(body), decodedData)
+		bodyDataAsBytes, err := hex.DecodeString(string(body))
+
+		if (err != nil) {
+			log.Print("Error decoding hex string to bytes: ", err)
+			response.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		err = unmarshalFunc(bodyDataAsBytes, decodedData)
 
 		if (err != nil) {
 			log.Print("Error unmarshaling request body: ", err)

@@ -42,10 +42,10 @@ func TestRootHandler_WhenRequestIsCalledWithMethod_AppropriateStatusIsReturnedIn
 
 		dummyRequest := http.Request {
 			Method: tableData.httpMethod,
-			Body: ioutil.NopCloser(strings.NewReader("foobar")),
+			Body: ioutil.NopCloser(strings.NewReader("061af7")),
 		}
 
-		dummyUnmarshaler := func (s string, pb proto.Message) error {
+		dummyUnmarshaler := func (b []byte, pb proto.Message) error {
 			return nil;
 		}
 
@@ -67,7 +67,7 @@ func TestRootHandler_RequestBodyCannotBeRead_ReturnsInternalServerError(t *testi
 		Body: ioutil.NopCloser( ErrorReader { strings.NewReader("Test") } ),
 	}
 
-	dummyUnmarshaler := func (s string, pb proto.Message) error {
+	dummyUnmarshaler := func (b []byte, pb proto.Message) error {
 		return nil;
 	}
 
@@ -88,7 +88,7 @@ func TestRootHandler_UnmarshallingBodyReturnsError_ReturnsInternalServerError(t 
 		Body: ioutil.NopCloser( strings.NewReader("Test") ),
 	}
 
-	dummyUnmarshaler := func (s string, pb proto.Message) error {
+	dummyUnmarshaler := func (b []byte , pb proto.Message) error {
 		return errors.New("Error message");
 	}
 
