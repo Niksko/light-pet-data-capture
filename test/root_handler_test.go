@@ -9,7 +9,18 @@ import (
 	"github.com/golang/protobuf/proto"
 	"io/ioutil"
 	"strings"
+	"io"
+	"errors"
 )
+
+// Type for testing that allows us to test error scenarios during reading response bodies
+type ErrorReader struct {
+	io.Reader
+}
+
+func (ErrorReader) Read(p []byte) (n int, err error) {
+	return 0, errors.New("Test")
+}
 
 func TestRootHandler_WhenRequestIsCalledWithMethod_AppropriateStatusIsReturnedInResponse(t *testing.T) {
 	testTable := []struct {
@@ -42,4 +53,46 @@ func TestRootHandler_WhenRequestIsCalledWithMethod_AppropriateStatusIsReturnedIn
 
 		mockCtrl.Finish()
 	}
+}
+
+func TestRootHandler_RequestBodyCannotBeRead_ReturnsInternalServerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+
+	mockResponseWriter := mock_http.NewMockResponseWriter(mockCtrl)
+	mockResponseWriter.EXPECT().WriteHeader(http.StatusInternalServerError)
+	mockResponseWriter.EXPECT().Header().Times(3).Return(make(map[string][]string))
+
+	dummyRequest := http.Request {
+		Method: http.MethodPost,
+		Body: ioutil.NopCloser( ErrorReader { strings.NewReader("Test") } ),
+	}
+
+	dummyUnmarshaler := func (s string, pb proto.Message) error {
+		return nil;
+	}
+
+	http_handlers.RootHandler(mockResponseWriter, &dummyRequest, dummyUnmarshaler)
+
+	mockCtrl.Finish()
+}
+
+func TestRootHandler_UnmarshallingBodyReturnsError_ReturnsInternalServerError(t *testing.T) {
+	mockCtrl := gomock.NewController(t)
+
+	mockResponseWriter := mock_http.NewMockResponseWriter(mockCtrl)
+	mockResponseWriter.EXPECT().WriteHeader(http.StatusInternalServerError)
+	mockResponseWriter.EXPECT().Header().Times(3).Return(make(map[string][]string))
+
+	dummyRequest := http.Request {
+		Method: http.MethodPost,
+		Body: ioutil.NopCloser( strings.NewReader("Test") ),
+	}
+
+	dummyUnmarshaler := func (s string, pb proto.Message) error {
+		return errors.New("Error message");
+	}
+
+	http_handlers.RootHandler(mockResponseWriter, &dummyRequest, dummyUnmarshaler)
+
+	mockCtrl.Finish()
 }

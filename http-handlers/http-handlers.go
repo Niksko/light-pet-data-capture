@@ -25,15 +25,17 @@ func RootHandler(response http.ResponseWriter, request *http.Request, unmarshalF
 		body, err := ioutil.ReadAll(request.Body)
 
 		if (err != nil) {
-			log.Print("Error getting request body: %s", err)
+			log.Print("Error getting request body: ", err)
 			response.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 
 		err = unmarshalFunc(string(body), decodedData)
 
 		if (err != nil) {
-			log.Print("Error unmarshaling request body: %s", err)
+			log.Print("Error unmarshaling request body: ", err)
 			response.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 
 		response.WriteHeader(http.StatusOK)
