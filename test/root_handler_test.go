@@ -5,6 +5,10 @@ import (
 	"net/http"
 	"github.com/golang/mock/gomock"
 	"github.com/niksko/light-pet-data-capture/mocks"
+	"github.com/niksko/light-pet-data-capture/http-handlers"
+	"github.com/golang/protobuf/proto"
+	"io/ioutil"
+	"strings"
 )
 
 func TestRootHandler_WhenRequestIsCalledWithMethod_AppropriateStatusIsReturnedInResponse(t *testing.T) {
@@ -27,9 +31,14 @@ func TestRootHandler_WhenRequestIsCalledWithMethod_AppropriateStatusIsReturnedIn
 
 		dummyRequest := http.Request {
 			Method: tableData.httpMethod,
+			Body: ioutil.NopCloser(strings.NewReader("foobar")),
 		}
 
-		RootHandler(mockResponseWriter, &dummyRequest)
+		dummyUnmarshaler := func (s string, pb proto.Message) error {
+			return nil;
+		}
+
+		http_handlers.RootHandler(mockResponseWriter, &dummyRequest, dummyUnmarshaler)
 
 		mockCtrl.Finish()
 	}

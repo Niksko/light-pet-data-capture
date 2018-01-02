@@ -4,31 +4,20 @@ import (
 	"crypto/tls"
 	"net/http"
 	"log"
-	"fmt"
 	"github.com/gorilla/handlers"
 	"os"
+	"github.com/golang/protobuf/proto"
+	"github.com/niksko/light-pet-data-capture/http-handlers"
 )
 
-func RootHandler(response http.ResponseWriter, request *http.Request) {
-	response.Header().Add("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload")
-	response.Header().Add("X-Frame-Options", "DENY")
-	response.Header().Add("X-Content-Type-Options", "nosniff")
 
-	log.Print(fmt.Sprintf("Handled request at / from %s", request.RemoteAddr))
-
-	if (request.Method == http.MethodPost) {
-		response.WriteHeader(http.StatusOK)
-		log.Print("Request method was POST, sending 200 OK")
-	} else {
-		response.WriteHeader(http.StatusMethodNotAllowed)
-		log.Print(fmt.Sprintf("Request method was %s, sending 405 Method Not Allowed", request.Method))
-	}
-}
 
 func main() {
     mux := http.NewServeMux()
 
-    mux.HandleFunc("/", RootHandler)
+    mux.HandleFunc("/", func(response http.ResponseWriter, request *http.Request) {
+    	http_handlers.RootHandler(response, request, proto.UnmarshalText)
+	})
 
     loggedMux := handlers.LoggingHandler(os.Stdout, mux)
 
