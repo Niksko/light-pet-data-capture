@@ -4,3 +4,22 @@ services:
     build: .
     ports:
      - "443:443"
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: light-pet
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres-password
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./secrets/postgres-password:/run/secrets/postgres-password
+      - ./pgdata:/var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+     - 8080:8080

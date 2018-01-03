@@ -80,3 +80,9 @@ fabric.properties
 #
 # Ignore certs folder
 certs/*
+
+# Ignore secrets folder
+secrets/*
+
+# Ignore pgdata folder that contains postgres data
+pgdata/*
